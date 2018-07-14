@@ -2,22 +2,6 @@
 import numpy as np
 import math
 import logging
-
-###  ノードの決定     ###
-#情報利得の計算関数(D:データセット)
-def Gain(D):
-    attrNum = [0,0,0] #[○,△,?]の数
-    Dlength = len(D)  #データ数
-
-    #全体の情報利得を計算
-    infoAll = Info(data)
-
-    #それぞれの独立変数毎で平均情報量を計算
-    for attr in range(len(attribute_list)):
-        #クラスに分類(○ or △ or ?)
-        Cs = np.array(3) #クラス集合（初期）
-        for data in D:
-            #data[4]と一致するattrTypeのインデックスを取ってくる
 attr_list = ["age","income","student","credit_rating","buy_computer"]
 datas = np.array([["youth","high","no","fair","no"],
                   ["youth","high","no","excellent","no"],
@@ -35,20 +19,42 @@ datas = np.array([["youth","high","no","fair","no"],
                   ["senior","medium","no","excellent","no"]])
 
 
+###  関数群     ###
+#属性の種類を計算(D:その属性のみの全データ)
+def caluculateAttrType(D):
+    attrType = [];
+    typeNum = [];
+    for data in D:
+        if data not in attrType:
+            attrType.append(data)
+            typeNum.append(1)
+        else:
+            typeNum[attrType.index(data)] = typeNum[attrType.index(data)]+1
+    return [attrType,typeNum]
 
 
-#平均情報量計算関数(D:データセット)
+#平均情報量計算関数(D:その属性のみのデータ)
 def Info(D):
-    Dlength = len(D) #全体のデータ数
     info = 0
+    attrType = caluculateAttrType(D)
 
     #平均情報量を計算して、結果を返す
-    for i in range(len(attrType)):
-        p = np.sum(D.transpose()[4] == attrType[i]) / Dlength #その属性の出現確率を計算
-        info += -1 * p * math.log(p,3) #その属性の情報量を計算
+    for attr in attrType[1]:
+        p = attr / len(D) #その属性の出現確率を計算
+        if p != 0:
+            info += -1 * p * math.log2(p) #その属性の情報量を計算
     return info
 
 
+#属性ごとの情報利得(attr:属性データ,train:訓練データ)
+def InfoA(attrD,trainD):
+    info = 0  #最終的に出力する情報利得
+    attrType = caluculateAttrType(attrD)   #attrDの属性の種類を出力
+    aDtD = np.array([attrD,trainD])
+    for i in range(len(attrType[0])):
+        info += (attrType[1][i]/len(trainD)) * Info(aDtD[1][aDtD[0] == attrType[0][i]])
+
+    return info
 
 info = Info(datas)
 print(info)
