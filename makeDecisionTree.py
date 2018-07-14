@@ -56,8 +56,6 @@ def InfoA(attrD,trainD):
 
     return info
 
-info = Info(datas)
-print(info)
 
 
 
