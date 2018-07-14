@@ -65,5 +65,19 @@ def makeDecisionTree(datas,attr_list):
     attrD = transD[:len(transD)-1] #属性データ集合
     GainMax = 0 #情報利得最大値
 
+    ## 情報利得から選択する属性を決定 ##
+    #全体の情報利得を計算
+    infoAll = Info(trainD)
+    #各情報利得計算&最大の情報利得とその属性を記録
+    for i in range(len(attrD)):
+        tmpGM = GainMax
+        GainMax = max(GainMax,infoAll-InfoA(attrD[i],trainD))
+        if tmpGM != GainMax or i == 0:
+            MaxAttr = attr_list[i]
+    ##MaxAttrで決定されたノードを元に分類
+    #MaxAttrに関するデータ収集
+    maxAttrIndex = attr_list.index(MaxAttr)#最大属性のインデックス
+    maxAttrD = attrD[maxAttrIndex]#最大属性データ
+    maxAttrType = caluculateAttrType(maxAttrD)[0] #情報利得最大の属性値タイプ一覧
 
 
