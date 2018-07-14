@@ -57,7 +57,13 @@ def InfoA(attrD,trainD):
     return info
 
 
+def makeDecisionTree(datas,attr_list):
+    ## 変数定義 ##
+    transD = datas.transpose()  #転置したdata
+    Dlength = len(datas)  #データ数
+    trainD = transD[len(transD)-1] #訓練データ
+    attrD = transD[:len(transD)-1] #属性データ集合
+    GainMax = 0 #情報利得最大値
 
 
 
-#Gain(datas)
