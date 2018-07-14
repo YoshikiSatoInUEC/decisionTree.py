@@ -80,4 +80,19 @@ def makeDecisionTree(datas,attr_list):
     maxAttrD = attrD[maxAttrIndex]#最大属性データ
     maxAttrType = caluculateAttrType(maxAttrD)[0] #情報利得最大の属性値タイプ一覧
 
+    #再帰へ
+    for type in maxAttrType:
+        print("if " + MaxAttr + "==" + type)
+        divideD = datas[transD[maxAttrIndex] == type]  #MaxAttrの値がtypeのデータのみのデータ集合
+        transDivD = divideD.transpose()[len(transD)-1]
+        newAttr_list = attr_list[:] #値渡しで新たなリスト作成
+        newAttr_list.remove(MaxAttr)
 
+        if len(list(set(transDivD))) == 1 or len(newAttr_list) <= 1:  #listが空 or 完璧に分類
+            types = caluculateAttrType(transDivD)
+            if len(types[1]) == 1:  #リストが空
+                print(types[0][0])
+            else:  #完璧に分類
+                print(types[0][types[1].index(max(types[1]))])
+        else:  #訓練データが全て同じじゃないとき→再帰
+            makeDecisionTree(np.delete(divideD,maxAttrIndex,1),newAttr_list)
