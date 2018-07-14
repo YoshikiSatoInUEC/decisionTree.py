@@ -2,12 +2,6 @@
 import numpy as np
 import math
 import logging
-attribute_list = ["Rel_local","Rel_root","Sim_local","Sim_root"]
-attrType = ["○","△","?"]
-datas = np.array([["○","○","○","○","○"],
-                 ["○","○","○","○","?"],
-                 ["○","?","○","?","△"]]) #訓練データの集合(x1,x2,x3,x4,c)
-                                      #x1:Rel_root,x2:Rel_local,x3:Sim_root,x4:Sim_local
 
 ###  ノードの決定     ###
 #情報利得の計算関数(D:データセット)
@@ -24,6 +18,21 @@ def Gain(D):
         Cs = np.array(3) #クラス集合（初期）
         for data in D:
             #data[4]と一致するattrTypeのインデックスを取ってくる
+attr_list = ["age","income","student","credit_rating","buy_computer"]
+datas = np.array([["youth","high","no","fair","no"],
+                  ["youth","high","no","excellent","no"],
+                  ["middle_age","high","no","fair","yes"],
+                  ["senior","medium","no","fair","yes"],
+                  ["senior","low","yes","fair","yes"],
+                  ["senior","low","yes","excellent","no"],
+                  ["middle_age","low","yes","excellent","yes"],
+                  ["youth","medium","no","fair","no"],
+                  ["youth","high","yes","fair","yes"],
+                  ["senior","medium","yes","fair","yes"],
+                  ["youth","medium","yes","excellent","yes"],
+                  ["middle_age","medium","no","excellent","yes"],
+                  ["middle_age","high","yes","fair","yes"],
+                  ["senior","medium","no","excellent","no"]])
 
 
 
