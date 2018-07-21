@@ -57,7 +57,7 @@ def InfoA(attrD,trainD):
     return info
 
 
-def makeDecisionTree(datas,attr_list,i):
+def makeDecisionTree(datas,attr_list,k):
     ## 変数定義 ##
     transD = datas.transpose()  #転置したdata
     Dlength = len(datas)  #データ数
@@ -80,10 +80,18 @@ def makeDecisionTree(datas,attr_list,i):
     maxAttrD = attrD[maxAttrIndex]#最大属性データ
     maxAttrType = caluculateAttrType(maxAttrD)[0] #情報利得最大の属性値タイプ一覧
 
-    print(maxAttrType)
+    #プログラム出力用のインデント生成
+    indent=""
+    for i in range(k):
+        indent += "  "
+
+
     #再帰へ
     for type in maxAttrType:
-        print("if data[attr_list.index(\"" + MaxAttr + "\")]==\"" + type + "\":")
+        el = ""
+        if maxAttrType.index(type) != 0:
+            el = "el"
+        print(indent + el + "if data[attr_list.index(\"" + MaxAttr + "\")]==\"" + type + "\":")
         divideD = datas[transD[maxAttrIndex] == type]  #MaxAttrの値がtypeのデータのみのデータ集合
         transDivD = divideD.transpose()[len(transD)-1]
         newAttr_list = attr_list[:] #値渡しで新たなリスト作成
@@ -92,8 +100,8 @@ def makeDecisionTree(datas,attr_list,i):
         if len(list(set(transDivD))) == 1 or len(newAttr_list) <= 1:  #listが空 or 完璧に分類
             types = caluculateAttrType(transDivD)
             if len(types[1]) == 1:  #リストが空
-                print("return"+"  "+"\"" + types[0][0]+"\"")
+                print(indent + "  return"+"  "+"\"" + types[0][0]+"\"")
             else:  #完璧に分類
-                print("return"+"  " +"\""+ types[0][types[1].index(max(types[1]))]+"\"")
+                print(indent+"  return"+"  " +"\""+ types[0][types[1].index(max(types[1]))]+"\"")
         else:  #訓練データが全て同じじゃないとき→再帰
-            makeDecisionTree(np.delete(divideD,maxAttrIndex,1),newAttr_list,i+1)
+            makeDecisionTree(np.delete(divideD,maxAttrIndex,1),newAttr_list,k+1)
