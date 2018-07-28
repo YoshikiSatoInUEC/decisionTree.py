@@ -2,22 +2,35 @@
 import numpy as np
 import math
 import logging
-attr_list = ["age","income","student","credit_rating","buy_computer"]
-datas = np.array([["youth","high","no","fair","no"],
-                  ["youth","high","no","excellent","no"],
-                  ["middle_age","high","no","fair","yes"],
-                  ["senior","medium","no","fair","yes"],
-                  ["senior","low","yes","fair","yes"],
-                  ["senior","low","yes","excellent","no"],
-                  ["middle_age","low","yes","excellent","yes"],
-                  ["youth","medium","no","fair","no"],
-                  ["youth","high","yes","fair","yes"],
-                  ["senior","medium","yes","fair","yes"],
-                  ["youth","medium","yes","excellent","yes"],
-                  ["middle_age","medium","no","excellent","yes"],
-                  ["middle_age","high","yes","fair","yes"],
-                  ["senior","medium","no","excellent","no"]])
+import csv
+#attr_list = ["age","income","student","credit_rating","buy_computer"]
+#datas = np.array([["youth","high","no","fair","no"],
+#                  ["youth","high","no","excellent","no"],
+#                 ["middle_age","high","no","fair","yes"],
+#                  ["senior","medium","no","fair","yes"],
+#                  ["senior","low","yes","fair","yes"],
+#                  ["senior","low","yes","excellent","no"],
+#                  ["middle_age","low","yes","excellent","yes"],
+#                  ["youth","medium","no","fair","no"],
+#                  ["youth","high","yes","fair","yes"],
+#                  ["senior","medium","yes","fair","yes"],
+#                  ["youth","medium","yes","excellent","yes"],
+#                  ["middle_age","medium","no","excellent","yes"],
+#                  ["middle_age","high","yes","fair","yes"],
+#                  ["senior","medium","no","excellent","no"]])
 
+with open('datas.csv', 'r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    datas = np.array([])
+    for row in reader:
+        if len(datas) == 0:
+            datas = np.array([row])
+        else:
+            datas = np.append(datas, np.array([row]), axis=0)
+
+attr_list = header[0:len(header)-1]
+datas = np.array(datas)
 
 ###  関数群     ###
 #属性の種類を計算(D:その属性のみの全データ)
@@ -85,13 +98,13 @@ def makeDecisionTree(datas,attr_list,k):
     for i in range(k):
         indent += "  "
 
-
+    str=""
     #再帰へ
     for type in maxAttrType:
-        el = ""
+        el = "  "
         if maxAttrType.index(type) != 0:
-            el = "el"
-        print(indent + el + "if data[attr_list.index(\"" + MaxAttr + "\")]==\"" + type + "\":")
+            el += "el"
+        str += indent + el + "if data[attr_list.index(\"" + MaxAttr + "\")]==\"" + type + "\":\n"
         divideD = datas[transD[maxAttrIndex] == type]  #MaxAttrの値がtypeのデータのみのデータ集合
         transDivD = divideD.transpose()[len(transD)-1]
         newAttr_list = attr_list[:] #値渡しで新たなリスト作成
@@ -100,8 +113,16 @@ def makeDecisionTree(datas,attr_list,k):
         if len(list(set(transDivD))) == 1 or len(newAttr_list) <= 1:  #listが空 or 完璧に分類
             types = caluculateAttrType(transDivD)
             if len(types[1]) == 1:  #リストが空
-                print(indent + "  return"+"  "+"\"" + types[0][0]+"\"")
+                str += indent + "    return"+"  "+"\"" + types[0][0]+"\"\n"
             else:  #完璧に分類
-                print(indent+"  return"+"  " +"\""+ types[0][types[1].index(max(types[1]))]+"\"")
+                str += indent+"    return"+"  " +"\""+ types[0][types[1].index(max(types[1]))]+"\"\n"
         else:  #訓練データが全て同じじゃないとき→再帰
-            makeDecisionTree(np.delete(divideD,maxAttrIndex,1),newAttr_list,k+1)
+            str += makeDecisionTree(np.delete(divideD,maxAttrIndex,1),newAttr_list,k+1)
+    return str;
+
+
+str = "def decisionTree(data,attr_list):\n"
+str += makeDecisionTree(datas,attr_list,0)
+f = open("decisionTree.py","w")
+f.write(str)
+f.close()
